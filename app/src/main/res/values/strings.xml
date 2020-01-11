@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">TwoScreen</string>
+    <string name="show_different_view">toggle presentation view</string>
+    <string name="select_video">select video</string>
+    <string name="select_presentation_video">select presentation video</string>
+</resources>
