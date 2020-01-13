@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.Display
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.qytech.twoscreen.CustomDisplay
 import com.qytech.twoscreen.R
+import com.qytech.twoscreen.util.PathUtil
 import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
 
@@ -43,21 +43,26 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
         initDisplayManager()
+        message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
         //        videoView.setVideoPath("${Environment.getExternalStorageDirectory()}/big-buck-bunny-1080p-60fps-30s.mp4")
         //        videoView.setVideoURI(Uri.parse("android.resource://${requireActivity().packageName}/raw/cat1"))
-        videoView.setVideoURI(Uri.parse("android.resource://${requireActivity().packageName}/raw/test_60fps"))
-        videoView.setOnPreparedListener {
-            it.isLooping = true
-            videoView.start()
-        }
-        videoView.setOnCompletionListener {
-        }
+//        videoView.setVideoURI(Uri.parse("android.resource://${requireActivity().packageName}/raw/test_60fps"))
+//        videoView.setOnPreparedListener {
+//            it.isLooping = true
+//            videoView.start()
+//        }
+//        videoView.setOnCompletionListener {
+//        }
+
+        val afd = requireContext().resources.openRawResourceFd(R.raw.test_60fps)
+        videoView.setDataSource(afd)
         btn_select_video.setOnClickListener {
             selectVideo(CODE_MAIN_VIDEO)
         }
         btn_presentation_video.setOnClickListener {
             selectVideo(CODE_PRESENTATION_VIDEO)
         }
+        btn_decode_test.visibility = View.GONE
         message.setOnClickListener {
             Timber.d("on message click date: 2020-01-09 ")
             if (customDisplay == null) {
@@ -107,10 +112,15 @@ class MainFragment : Fragment() {
         }
         when (requestCode) {
             CODE_MAIN_VIDEO -> {
-                videoView.setVideoURI(data?.data)
+                data?.data?.let {
+                    videoView.setDataSource(PathUtil.getPath(requireContext(), it))
+                }
             }
             CODE_PRESENTATION_VIDEO -> {
-                customDisplay?.setVideoURI(data?.data)
+//                customDisplay?.setVideoURI(data?.data)
+                data?.data?.let {
+                    customDisplay?.setDataSource(PathUtil.getPath(requireContext(), it))
+                }
             }
         }
     }

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
-    <com.qytech.twoscreen.widget.FpsVideoView
+    <com.qytech.twoscreen.widget.VideoPlayerView
         android:id="@+id/videoView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,4 +45,13 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_select_video" />
+
+    <Button
+        android:id="@+id/btn_decode_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/decode_test"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_presentation_video" />
 </androidx.constraintlayout.widget.ConstraintLayout>

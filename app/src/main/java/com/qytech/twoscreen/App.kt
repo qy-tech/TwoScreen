@@ -8,11 +8,12 @@ import timber.log.Timber
  * Description :
  * Version : V1.0.0
  */
-class App :Application(){
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Timber.plant(Timber.DebugTree())
-//        FpsViewer.getViewer().initViewer(this,null)
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }
