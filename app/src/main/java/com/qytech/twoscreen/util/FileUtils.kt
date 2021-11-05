@@ -114,7 +114,7 @@ object FileUtils {
                 contentBuf.write(readBuffer, 0, readLen)
             }
             return contentBuf.toByteArray()
-        } catch (e: Exception) {
+        } catch (e: Exception){
         } finally {
             if (fin != null) {
                 try {

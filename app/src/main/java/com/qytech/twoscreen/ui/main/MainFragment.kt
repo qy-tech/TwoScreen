@@ -41,20 +41,10 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
         initDisplayManager()
         message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
-        //        videoView.setVideoPath("${Environment.getExternalStorageDirectory()}/big-buck-bunny-1080p-60fps-30s.mp4")
-        //        videoView.setVideoURI(Uri.parse("android.resource://${requireActivity().packageName}/raw/cat1"))
-//        videoView.setVideoURI(Uri.parse("android.resource://${requireActivity().packageName}/raw/test_60fps"))
-//        videoView.setOnPreparedListener {
-//            it.isLooping = true
-//            videoView.start()
-//        }
-//        videoView.setOnCompletionListener {
-//        }
 
-        val afd = requireContext().resources.openRawResourceFd(R.raw.test_60fps)
+        val afd = requireContext().resources.openRawResourceFd(R.raw.t1)
         videoView.setDataSource(afd)
         btn_select_video.setOnClickListener {
             selectVideo(CODE_MAIN_VIDEO)
@@ -62,7 +52,9 @@ class MainFragment : Fragment() {
         btn_presentation_video.setOnClickListener {
             selectVideo(CODE_PRESENTATION_VIDEO)
         }
+        btn_presentation_video.visibility = View.GONE
         btn_decode_test.visibility = View.GONE
+        btn_select_video.visibility = View.GONE
         message.setOnClickListener {
             Timber.d("on message click date: 2020-01-09 ")
             if (customDisplay == null) {
@@ -70,10 +62,8 @@ class MainFragment : Fragment() {
             }
             if (customDisplay?.isShowing == true) {
                 customDisplay?.dismiss()
-                btn_presentation_video.visibility = View.GONE
             } else {
                 customDisplay?.show()
-                btn_presentation_video.visibility = View.VISIBLE
             }
         }
     }

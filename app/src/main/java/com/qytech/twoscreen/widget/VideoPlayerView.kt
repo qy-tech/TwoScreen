@@ -13,6 +13,7 @@ import com.qytech.twoscreen.util.CpuInfoReader
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import kotlin.math.ceil
 
@@ -69,6 +70,7 @@ class VideoPlayerView(context: Context, attributeSet: AttributeSet? = null) :
     fun setDataSource(path: String) {
         this.videoPath = path
         this.videoFd = null
+        Timber.d("setDataSource $path isSurfaceValid $isSurfaceValid")
         if (isSurfaceValid) {
             startPlay()
         }
