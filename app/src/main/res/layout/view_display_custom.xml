@@ -7,8 +7,8 @@
 
     <com.qytech.twoscreen.widget.VideoPlayerView
         android:id="@+id/videoView"
-        android:layout_width="320dp"
-        android:layout_height="240dp"
+        android:layout_width="320px"
+        android:layout_height="240px"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

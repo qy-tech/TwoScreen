@@ -112,19 +112,21 @@ class VideoPlayerView(context: Context, attributeSet: AttributeSet? = null) :
         } else if (videoPath.isNotBlank()) {
             playerThread = PlayerThread(holder?.surface, videoPath)
         }
-        playerThread?.setOnCompletionListener(object : PlayerThread.OnCompletionListener {
-            override fun onCompletion() {
-                playerThread?.run()
-            }
-        })
-        playerThread?.setOnFpsChangeListener(object : PlayerThread.OnFpsChangeListener {
-            override fun onFpsChange(fps: Int) {
-                this@VideoPlayerView.fps = fps
-                postInvalidate()
-            }
-
-        })
+        playerThread?.setOnCompletionListener(onCompletionListener)
+        playerThread?.setOnFpsChangeListener(onFpsChangeListener)
         playerThread?.start()
+    }
+
+    private val onFpsChangeListener = object : PlayerThread.OnFpsChangeListener {
+        override fun onFpsChange(fps: Int) {
+            this@VideoPlayerView.fps = fps
+            postInvalidate()
+        }
+    }
+    private val onCompletionListener = object : PlayerThread.OnCompletionListener {
+        override fun onCompletion() {
+            startPlay()
+        }
     }
 
     override fun onDraw(canvas: Canvas?) {
