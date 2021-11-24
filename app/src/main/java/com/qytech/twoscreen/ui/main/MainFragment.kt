@@ -14,9 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.qytech.twoscreen.CustomDisplay
 import com.qytech.twoscreen.R
+import com.qytech.twoscreen.util.FileUtils
 import com.qytech.twoscreen.util.PathUtil
 import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
+import java.io.File
 
 class MainFragment : Fragment() {
 
@@ -30,6 +32,7 @@ class MainFragment : Fragment() {
     private lateinit var displayManager: DisplayManager
     private var displays = arrayOf<Display>()
     private var customDisplay: CustomDisplay? = null
+    private val gpioFile = File("/sys/class/gpio/gpio21/value")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +67,16 @@ class MainFragment : Fragment() {
                 customDisplay?.dismiss()
             } else {
                 customDisplay?.show()
+            }
+        }
+
+        btn_gpio_test.setOnClickListener {
+            if (gpioFile.exists() && gpioFile.canRead() && gpioFile.canWrite()) {
+                if (FileUtils.readFromFile(gpioFile) != "1") {
+                    FileUtils.write2File(gpioFile, "1")
+                } else {
+                    FileUtils.write2File(gpioFile, "0")
+                }
             }
         }
     }
