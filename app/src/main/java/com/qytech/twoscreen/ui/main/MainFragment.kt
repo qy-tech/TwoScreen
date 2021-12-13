@@ -69,7 +69,7 @@ class MainFragment : Fragment() {
                 customDisplay?.show()
             }
         }
-        switch_gpio_test.isChecked = FileUtils.readFromFile(gpioFile) != "1"
+        switch_gpio_test.isChecked = FileUtils.readFromFile(gpioFile) == "1"
         switch_gpio_test.setOnCheckedChangeListener { _, isChecked ->
             if (gpioFile.exists() && gpioFile.canRead() && gpioFile.canWrite()) {
                 if (isChecked) {
