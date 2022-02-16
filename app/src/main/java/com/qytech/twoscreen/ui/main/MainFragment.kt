@@ -33,6 +33,7 @@ class MainFragment : Fragment() {
     private var displays = arrayOf<Display>()
     private var customDisplay: CustomDisplay? = null
     private val gpioFile = File("/sys/class/gpio/gpio21/value")
+    private val hdmiStatusFile = File("/sys/class/drm/card0-HDMI-A-1/status")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,14 +70,15 @@ class MainFragment : Fragment() {
                 customDisplay?.show()
             }
         }
-        switch_gpio_test.isChecked = FileUtils.readFromFile(gpioFile) == "1"
+        switch_gpio_test.isChecked = FileUtils.readFromFile(hdmiStatusFile) == "connected"
         switch_gpio_test.setOnCheckedChangeListener { _, isChecked ->
-            if (gpioFile.exists() && gpioFile.canRead() && gpioFile.canWrite()) {
+            if (hdmiStatusFile.exists() && hdmiStatusFile.canRead() && hdmiStatusFile.canWrite()) {
                 if (isChecked) {
-                    FileUtils.write2File(gpioFile, "1")
+                    FileUtils.write2File(hdmiStatusFile, "on")
                 } else {
-                    FileUtils.write2File(gpioFile, "0")
+                    FileUtils.write2File(hdmiStatusFile, "detect")
                 }
+                updateDisplays()
             }
         }
     }
@@ -84,6 +86,15 @@ class MainFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         releaseCustomDisplay()
+    }
+
+    private fun updateDisplays() {
+        Timber.d("updateDisplays size ${displays.size}")
+        message.postDelayed({
+            displays = displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+            message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
+            Timber.d("updateDisplays size ${displays.size}")
+        }, 500L)
     }
 
     private fun initDisplayManager() {
