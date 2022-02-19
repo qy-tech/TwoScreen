@@ -76,7 +76,7 @@ class MainFragment : Fragment() {
                 if (isChecked) {
                     FileUtils.write2File(hdmiStatusFile, "on")
                 } else {
-                    FileUtils.write2File(hdmiStatusFile, "detect")
+                    FileUtils.write2File(hdmiStatusFile, "off")
                 }
                 updateDisplays()
             }
