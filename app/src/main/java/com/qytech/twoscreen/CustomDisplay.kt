@@ -6,7 +6,8 @@ import android.content.pm.ActivityInfo
 import android.view.Display
 import android.view.WindowManager
 import android.widget.Toast
-import kotlinx.android.synthetic.main.view_display_custom.*
+import androidx.databinding.DataBindingUtil
+import com.qytech.twoscreen.databinding.ViewDisplayCustomBinding
 import timber.log.Timber
 
 /**
@@ -20,28 +21,24 @@ class CustomDisplay(
     theme: Int = R.style.AppTheme
 ) : Presentation(context, display, theme) {
 
+    private var binding: ViewDisplayCustomBinding
     fun setDataSource(path: String) {
-        videoView.post {
-            videoView.setDataSource(path)
+        binding.videoView.post {
+            binding.videoView.setDataSource(path)
         }
     }
 
     init {
         Timber.d(" date: 2020-01-09 ")
         window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setContentView(R.layout.view_display_custom)
-
-        Toast.makeText(
-            context,
-            "width is ${display.width} height is ${display.height} ",
-            Toast.LENGTH_SHORT
-        ).show()
+        binding = DataBindingUtil.inflate(layoutInflater, R.layout.view_display_custom, null, false)
+        setContentView(binding.root)
         playVideo()
     }
 
     private fun playVideo() {
-        val afd = resources.openRawResourceFd(R.raw.test_320x240)
-        videoView.setDataSource(afd)
-        videoView.showCpuInfo = true
+        val afd = resources.openRawResourceFd(R.raw.test_720p_apple)
+        binding.videoView.setDataSource(afd)
+        binding.videoView.showCpuInfo = true
     }
 }

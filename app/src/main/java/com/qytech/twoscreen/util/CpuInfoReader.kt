@@ -15,13 +15,17 @@ object CpuInfoReader {
     //Cpu 小核频率
     private const val SCALING_CUR_FREQ_0 =
         "/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq"
+
     //cpu大核频率
     private const val SCALING_CUR_FREQ_4 =
         "/sys/devices/system/cpu/cpufreq/policy4/scaling_cur_freq"
+
     //cpu温度
     private const val CPU_TEMP = "/sys/class/thermal/thermal_zone0/temp"
+
     //GPU频率
     private const val GPU_FREQ = "/sys/class/devfreq/ff9a0000.gpu/cur_freq"
+
     //GPU温度
     private const val GPU_TEMP = "/sys/class/thermal/thermal_zone1/temp"
     private const val SOC = "/sys/devices/system/cpu/soc"
@@ -58,8 +62,7 @@ object CpuInfoReader {
     // 获取系统总CPU使用时间和空闲时间
     private fun getCpuTime(): LongArray {
         val cpuInfo = LongArray(2)
-        var cpuInfos: Array<String>?
-        cpuInfos = try {
+        var cpuInfos: Array<String> = try {
             val reader = BufferedReader(
                 InputStreamReader(
                     FileInputStream("/proc/stat")
@@ -72,10 +75,10 @@ object CpuInfoReader {
             ex.printStackTrace()
             return cpuInfo
         }
-        val totalCpu =
-            cpuInfos[2].toLong() + cpuInfos[3].toLong() + cpuInfos[4].toLong() + cpuInfos[6].toLong() + cpuInfos[5].toLong() + cpuInfos[7].toLong() + cpuInfos[8].toLong()
+        val totalCpu = cpuInfos?.copyOfRange(2, 8)?.sumOf { it.toLong() } ?: 0
         cpuInfo[0] = totalCpu
         cpuInfo[1] = cpuInfos[5].toLong()
+
         return cpuInfo
     }
 

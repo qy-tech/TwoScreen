@@ -117,12 +117,15 @@ class PlayerThread(private val surface: Surface?) : Thread() {
                             Timber.d("INFO_OUTPUT_BUFFERS_CHANGED")
                             outputBuffers = decoder.outputBuffers
                         }
+
                         MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
                             Timber.d("New format %s", decoder.outputFormat)
                         }
+
                         MediaCodec.INFO_TRY_AGAIN_LATER -> {
                             Timber.d("dequeueOutputBuffer timed out!")
                         }
+
                         else -> {
                             val buffer: ByteBuffer = outputBuffers[outIndex]
 
@@ -161,7 +164,7 @@ class PlayerThread(private val surface: Surface?) : Thread() {
             (0 until extractor.trackCount).map { index ->
                 val format = extractor.getTrackFormat(index)
                 val mime = format.getString(MediaFormat.KEY_MIME)
-                if (mime.startsWith("video/")) {
+                if (mime?.startsWith("video/") == true) {
                     extractor.selectTrack(index)
                     return MediaCodec.createDecoderByType(mime).apply {
                         configure(format, surface, null, 0)

@@ -40,6 +40,7 @@ object PathUtil {
                     val split = docId.split(":").toTypedArray()
                     return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
                 }
+
                 isDownloadsDocument(uri) -> {
                     val id = DocumentsContract.getDocumentId(uri)
                     uri = ContentUris.withAppendedId(
@@ -47,6 +48,7 @@ object PathUtil {
                         java.lang.Long.valueOf(id)
                     )
                 }
+
                 isMediaDocument(uri) -> {
                     val docId = DocumentsContract.getDocumentId(uri)
                     val split = docId.split(":").toTypedArray()
@@ -70,9 +72,10 @@ object PathUtil {
             try {
                 cursor = context.contentResolver
                     .query(uri, projection, selection, selectionArgs, null)
-                val columnIndex: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(columnIndex)
+                val columnIndex: Int =
+                    cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA) ?: 0
+                if (cursor?.moveToFirst() == true) {
+                    return cursor.getString(columnIndex) ?: ""
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

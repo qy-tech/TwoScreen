@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.qytech.twoscreen.CustomDisplay
 import com.qytech.twoscreen.R
+import com.qytech.twoscreen.databinding.MainFragmentBinding
 import com.qytech.twoscreen.util.FileUtils
 import com.qytech.twoscreen.util.PathUtil
-import kotlinx.android.synthetic.main.main_fragment.*
 import timber.log.Timber
 import java.io.File
 
@@ -35,43 +35,45 @@ class MainFragment : Fragment() {
     private val gpioFile = File("/sys/class/gpio/gpio21/value")
     private val hdmiStatusFile = File("/sys/class/drm/card0-HDMI-A-1/status")
 
+    private lateinit var binding: MainFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        binding = MainFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         initDisplayManager()
-        message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (customDisplay == null) {
+            initCustomDisplay()
+        }
+        binding.message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
 
-        val afd = requireContext().resources.openRawResourceFd(R.raw.t1)
-        videoView.setDataSource(afd)
-        btn_select_video.setOnClickListener {
+        val afd = requireContext().resources.openRawResourceFd(R.raw.test_1080p_ldh)
+        binding.videoView.setDataSource(afd)
+        binding.btnSelectVideo.setOnClickListener {
             selectVideo(CODE_MAIN_VIDEO)
         }
-        btn_presentation_video.setOnClickListener {
+        binding.btnPresentationVideo.setOnClickListener {
             selectVideo(CODE_PRESENTATION_VIDEO)
         }
-        btn_presentation_video.visibility = View.GONE
-        btn_decode_test.visibility = View.GONE
-        btn_select_video.visibility = View.GONE
-        message.setOnClickListener {
+        binding.btnPresentationVideo.visibility = View.GONE
+        binding.btnDecodeTest.visibility = View.GONE
+        binding.btnSelectVideo.visibility = View.GONE
+        binding.message.setOnClickListener {
             Timber.d("on message click date: 2020-01-09 ")
-            if (customDisplay == null) {
-                initCustomDisplay()
-            }
             if (customDisplay?.isShowing == true) {
                 customDisplay?.dismiss()
             } else {
                 customDisplay?.show()
             }
         }
-        switch_gpio_test.isChecked = FileUtils.readFromFile(hdmiStatusFile) == "connected"
-        switch_gpio_test.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchGpioTest.isChecked = FileUtils.readFromFile(hdmiStatusFile) == "connected"
+        binding.switchGpioTest.setOnCheckedChangeListener { _, isChecked ->
             if (hdmiStatusFile.exists() && hdmiStatusFile.canRead() && hdmiStatusFile.canWrite()) {
                 if (isChecked) {
                     FileUtils.write2File(hdmiStatusFile, "on")
@@ -81,6 +83,7 @@ class MainFragment : Fragment() {
                 updateDisplays()
             }
         }
+        customDisplay?.show()
     }
 
     override fun onDestroy() {
@@ -90,9 +93,9 @@ class MainFragment : Fragment() {
 
     private fun updateDisplays() {
         Timber.d("updateDisplays size ${displays.size}")
-        message.postDelayed({
+        binding.message.postDelayed({
             displays = displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
-            message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
+            binding.message.visibility = if (displays.isNullOrEmpty()) View.GONE else View.VISIBLE
             Timber.d("updateDisplays size ${displays.size}")
         }, 500L)
     }
@@ -127,9 +130,10 @@ class MainFragment : Fragment() {
         when (requestCode) {
             CODE_MAIN_VIDEO -> {
                 data?.data?.let {
-                    videoView.setDataSource(PathUtil.getPath(requireContext(), it))
+                    binding.videoView.setDataSource(PathUtil.getPath(requireContext(), it))
                 }
             }
+
             CODE_PRESENTATION_VIDEO -> {
 //                customDisplay?.setVideoURI(data?.data)
                 data?.data?.let {
